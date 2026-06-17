@@ -1,12 +1,54 @@
 # 社牛圣经 / The Social Bible 🦐
 
-A weekly bilingual social cheat sheet. Every Saturday, one email — seven conversation modules, each with one topic, 2-3 conversation angles, and a killer one-liner.
+A weekly bilingual social cheat sheet. Every Saturday, one email — seven conversation modules, each with **one topic, 2-3 conversation angles, and a killer one-liner**.
+
+不是新闻摘要，是**社交武器**。帮你把一条信息变成随时能开的腔。
+
+---
 
 ## Philosophy
 
 Knowing what happened ≠ knowing how to talk about it.
 
 This project doesn't aggregate news. It **weaponizes** information for conversation. Each module picks the single best topic of the week and gives you multiple ways to open — whether you're at a dinner party, a coffee chat, or a WeChat group.
+
+---
+
+## Quick Start（丢给AI看这段就能配置）
+
+### 1. Clone
+
+```bash
+git clone https://github.com/wepoets1107/social-bible.git
+cd social-bible
+```
+
+### 2. Install dependencies
+
+```bash
+# Python deps
+pip install openai markdown
+
+# opencli (for social platform data — public feeds, no login required)
+npm install -g @jackwener/opencli
+```
+
+### 3. Copy and edit config
+
+```bash
+cp .env.example .env
+# Then edit .env with your real credentials
+```
+
+### 4. Run
+
+```bash
+source .env && python3 social_bible_gen.py
+```
+
+If you paste this whole section into an AI coding agent (Claude/ChatGPT/Cursor), it will understand everything it needs.
+
+---
 
 ## Structure
 
@@ -20,47 +62,57 @@ This project doesn't aggregate news. It **weaponizes** information for conversat
 | 季节限定 / Seasonal Picks | Calendar events, World Cup, holidays |
 | 经典话题 / Classic Topic | Rotating evergreen topics |
 
-## Tech Stack
+---
 
-- Python (generation pipeline)
-- DeepSeek V4 Flash (content generation)
-- opencli (social platform data)
-- RSS feeds (Bluesky, V2EX, Bloomberg, BBC, Sina Finance)
-- SMTP (email delivery)
+## Configuration Reference
+
+| Env Var | Required | Default | Description |
+|---------|----------|---------|-------------|
+| `SMTP_SENDER` | ✅ | — | SMTP login email, e.g. `yourname@126.com` |
+| `SMTP_RECIPIENT` | ✅ | — | Where the newsletter is sent, e.g. `you@gmail.com` |
+| `SMTP_PASS` | ✅ | — | SMTP authorization code (NOT your email password) |
+| `SMTP_SERVER` | ❌ | `smtp.126.com` | SMTP host (use `smtp.gmail.com` for Gmail, `smtp.qq.com` for QQ) |
+| `SMTP_PORT` | ❌ | `465` | SMTP port (465=SSL, 587=TLS) |
+| `DEEPSEEK_API_KEY` | ✅ | — | DeepSeek API key ([get one here](https://platform.deepseek.com/api_keys)) |
+| `DEEPSEEK_BASE_URL` | ❌ | `https://api.deepseek.com` | API base URL |
+
+### SMTP Notes
+
+- **126/163 mail**: Get authorization code at Settings → POP3/SMTP
+- **QQ mail**: Get code at Settings → Account → POP3/SMTP service
+- **Gmail**: Enable 2FA → App password, or use `smtp.gmail.com:587` with TLS
+- The password is **not** your email login password. It's a separate SMTP authorization code.
+
+---
+
+## Data Sources
+
+- **opencli** — fetches from V2EX hot topics, Bluesky trending (public APIs, no cookie/login needed)
+- **Bloomberg/BBC/Sina Finance** — news via opencli public endpoints
+- **Calendar/seasonal** — built-in topic library in `seasonal_topics.py`
+
+If a news source fails, the script falls back to seasonal topics only (no fake news generated).
+
+---
 
 ## Anti-Fake-News
 
 - Real data sources only (no AI hallucination)
-- RSS < 5 items → fallback mode (no AI generation)
+- < 5 items from sources → skip AI generation, use fallback
 - Specific factual claims explicitly banned in prompts
 - Post-processing strips Chinese from English half
 
-## Setup
+---
 
-### SMTP (email delivery required)
+## Automate with Cron
 
-```bash
-export SMTP_SENDER="your@email.com"
-export SMTP_RECIPIENT="recipient@email.com"  # where the newsletter is sent
-export SMTP_PASS="your-smtp-authorization-code"
+Every Saturday 17:00 CST:
+```
+0 17 * * 6 cd /path/to/social-bible && source .env && python3 social_bible_gen.py >> /tmp/social-bible.log 2>&1
 ```
 
-SMTP defaults to `smtp.126.com:465` (SSL). Override with `SMTP_SERVER` and `SMTP_PORT` env vars.
+---
 
-### DeepSeek API
+## License
 
-```bash
-export DEEPSEEK_API_KEY="your-api-key"
-export DEEPSEEK_BASE_URL="https://api.deepseek.com"
-```
-
-## Run
-
-```bash
-python3 social_bible_gen.py
-```
-
-Or with cron (Saturday 17:00 CST):
-```
-0 17 * * 6 cd /path/to/social-bible && python3 social_bible_gen.py
-```
+MIT
