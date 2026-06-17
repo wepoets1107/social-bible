@@ -14,11 +14,10 @@ import markdown
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from seasonal_topics import get_this_week_topics, get_evergreen_pick
 
-SMTP_SERVER = "smtp.126.com"
-SMTP_PORT = 465
-SENDER = "zhangbojin1107@126.com"
-PASSWORD = os.environ.get("EMAIL_SMTP_PASS", "")
-RECIPIENT = "9006549@qq.com"
+SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.126.com")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", "465"))
+SENDER = os.environ.get("SMTP_SENDER", "")
+RECIPIENT = os.environ.get("SMTP_RECIPIENT", "")
 TZ = timezone(timedelta(hours=8))
 NOW = datetime.now(TZ)
 DATE_STR = NOW.strftime("%Y-%m-%d")
@@ -183,10 +182,18 @@ def gather_opencli():
     return d
 
 def get_ds():
-    with open(os.path.expanduser("~/.openclaw/openclaw.json")) as f:
-        c = json.load(f)
-    ds = c["models"]["providers"]["deepseek"]
-    return ds["apiKey"], ds["baseUrl"]
+    """从环境变量或openclaw配置获取DeepSeek API凭证"""
+    ak = os.environ.get("DEEPSEEK_API_KEY", "")
+    bu = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
+    if not ak:
+        try:
+            with open(os.path.expanduser("~/.openclaw/openclaw.json")) as f:
+                c = json.load(f)
+            ds = c["models"]["providers"]["deepseek"]
+            ak, bu = ds["apiKey"], ds["baseUrl"]
+        except:
+            pass
+    return ak, bu
 
 def call_ai(ak, bu, sp, up):
     from openai import OpenAI as OAI
@@ -595,15 +602,13 @@ def convert_md_to_html(md_text, chap_cn, chap_en):
     return html
 
 def send(html, text_alt):
-    pw = os.environ.get("EMAIL_SMTP_PASS", "")
+    pw = os.environ.get("SMTP_PASS", "")
     if not pw:
-        import subprocess
-        try:
-            r = subprocess.run(["bash","-c","source ~/.bashrc && echo $EMAIL_SMTP_PASS"], capture_output=True, text=True, timeout=5)
-            pw = r.stdout.strip()
-        except: pass
-    if not pw:
-        print("  ❌ No SMTP password"); return
+        print("  ❌ No SMTP password. Set SMTP_PASS env var.")
+        return
+    if not SENDER or not RECIPIENT:
+        print("  ❌ Set SMTP_SENDER and SMTP_RECIPIENT env vars.")
+        return
     msg = MIMEMultipart("alternative")
     msg["From"] = SENDER; msg["To"] = RECIPIENT
     msg["Subject"] = f"社牛圣经 / Social Bible | {DATE_STR}"

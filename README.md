@@ -35,10 +35,32 @@ This project doesn't aggregate news. It **weaponizes** information for conversat
 - Specific factual claims explicitly banned in prompts
 - Post-processing strips Chinese from English half
 
+## Setup
+
+### SMTP (email delivery required)
+
+```bash
+export SMTP_SENDER="your@email.com"
+export SMTP_RECIPIENT="recipient@email.com"  # where the newsletter is sent
+export SMTP_PASS="your-smtp-authorization-code"
+```
+
+SMTP defaults to `smtp.126.com:465` (SSL). Override with `SMTP_SERVER` and `SMTP_PORT` env vars.
+
+### DeepSeek API
+
+```bash
+export DEEPSEEK_API_KEY="your-api-key"
+export DEEPSEEK_BASE_URL="https://api.deepseek.com"
+```
+
 ## Run
 
 ```bash
-./run.sh
-# or
 python3 social_bible_gen.py
+```
+
+Or with cron (Saturday 17:00 CST):
+```
+0 17 * * 6 cd /path/to/social-bible && python3 social_bible_gen.py
 ```
