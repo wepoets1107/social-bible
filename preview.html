@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "PingFang SC", "Noto Sans SC", -apple-system, "Helvetica Neue", serif;
+    background: #1a1a2e;
+    margin: 0; padding: 0;
+  }
+  .container {
+    max-width: 620px;
+    margin: 0 auto;
+    background: #fdf6e3;
+    background-image:
+      linear-gradient(rgba(253,246,227,0.97), rgba(253,246,227,0.97)),
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none"/><path d="M20 10 L80 10 M10 50 L90 50 M20 90 L80 90" stroke="%23d4c9a8" stroke-width="0.5" opacity="0.3"/></svg>');
+    background-blend-mode: overlay;
+    padding: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    border: 1px solid #c9b98a;
+  }
+  .cover {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+    padding: 40px 30px 30px;
+    text-align: center;
+    border-bottom: 3px solid #e9b741;
+    position: relative;
+  }
+  .cover::before {
+    content: "☦";
+    position: absolute;
+    top: 15px; right: 25px;
+    font-size: 24px;
+    color: rgba(233,183,65,0.3);
+  }
+  .cover h1 {
+    font-family: "Noto Serif SC", "Songti SC", serif;
+    font-size: 28px;
+    color: #e9b741;
+    letter-spacing: 4px;
+    margin-bottom: 2px;
+    font-weight: 700;
+  }
+  .cover h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    color: #8a7a4a;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .cover .date {
+    color: #a09060;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .cover .chapter {
+    color: #6a5a3a;
+    font-size: 12px;
+    font-style: italic;
+    background: rgba(233,183,65,0.1);
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(233,183,65,0.3);
+    margin-top: 4px;
+  }
+  .cover-line {
+    color: #d4b060;
+    font-size: 17px;
+    line-height: 1.5;
+    padding: 12px 16px 6px;
+    text-align: center;
+    font-weight: 600;
+    background: rgba(233,183,65,0.08);
+  }
+  .cover-line .en {
+    display: block;
+    color: #8a7a4a;
+    font-size: 14px;
+    font-weight: 400;
+    font-style: italic;
+    margin-top: 4px;
+  }
+  .content { padding: 10px 20px 20px; color: #2c2c2c; font-size: 15px; line-height: 1.8; }
+  .section-label {
+    display: block;
+    text-align: center;
+    font-family: "Noto Serif SC", serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a2e;
+    letter-spacing: 2px;
+    margin: 24px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #1a1a2e;
+    position: relative;
+  }
+  .section-label::after {
+    content: "✧";
+    position: absolute; right: 0; top: 0;
+    font-size: 14px; color: #c9b98a;
+  }
+  .section-label-sub {
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    color: #8a7a4a;
+    font-style: italic;
+    margin-top: -8px;
+    margin-bottom: 10px;
+  }
+  .cat-sep {
+    display: flex; align-items: center;
+    margin: 20px 0 14px;
+    color: #8a7a4a;
+    font-size: 14px;
+  }
+  .cat-sep::before, .cat-sep::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px dashed #d4c9a8;
+  }
+  .cat-sep span {
+    padding: 0 12px;
+    font-weight: 600;
+  }
+  .topic {
+    margin: 12px 0 16px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 4px;
+    border-left: 3px solid #1a3a6a;
+  }
+  .topic .title {
+    font-weight: 700;
+    font-size: 16px;
+    color: #1a1a2e;
+    margin-bottom: 2px;
+  }
+  .topic .title-en {
+    font-size: 14px;
+    color: #8a7a6a;
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+  .topic .bg { font-size: 14px; color: #555; margin-bottom: 2px; }
+  .topic .bg-en { font-size: 13px; color: #8a7a6a; font-style: italic; margin-bottom: 4px; }
+  .topic .angle { font-size: 14px; color: #6a5a3a; margin-bottom: 2px; }
+  .topic .angle-en { font-size: 13px; color: #8a7a6a; font-style: italic; margin-bottom: 4px; }
+  .topic .quote-label {
+    font-size: 12px;
+    color: #c9a030;
+    font-weight: 600;
+    margin: 6px 0 2px;
+  }
+  .topic .quote {
+    background: #f0e6cc;
+    border-left: 3px solid #c9a030;
+    padding: 6px 10px;
+    margin: 2px 0 4px;
+    font-size: 14px;
+    color: #3a2a1a;
+    border-radius: 0 3px 3px 0;
+    line-height: 1.6;
+  }
+  .topic .quote-en {
+    background: #f0e6cc;
+    border-left: 3px solid #8a7a5a;
+    padding: 4px 10px 6px;
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #5a4a3a;
+    font-style: italic;
+    border-radius: 0 3px 3px 0;
+    line-height: 1.6;
+  }
+  .topic .advance { font-size: 13px; color: #7a6a4a; margin-top: 2px; }
+  .topic .advance-en { font-size: 13px; color: #8a7a5a; font-style: italic; margin-top: 2px; }
+
+  .power-quote {
+    background: #f0e6cc;
+    border: 1px solid #c9b98a;
+    padding: 12px 14px;
+    margin: 10px 0;
+    border-radius: 4px;
+    position: relative;
+  }
+  .power-quote::before {
+    content: "❝";
+    font-size: 24px; color: #c9a030;
+    position: absolute; top: -4px; left: 6px;
+  }
+  .power-quote .text { font-size: 15px; color: #2a2a2a; line-height: 1.7; padding-left: 16px; }
+  .power-quote .text-en { font-size: 13px; color: #6a5a4a; font-style: italic; line-height: 1.6; padding-left: 16px; margin-top: 2px; }
+  .power-quote .meta { font-size: 12px; color: #8a7a6a; margin-top: 4px; padding-left: 16px; }
+  .power-quote .scene { font-size: 12px; color: #a09060; padding-left: 16px; margin-top: 2px; }
+
+  .takeaway {
+    background: #1a1a2e;
+    color: #e9b741;
+    padding: 14px 18px;
+    border-radius: 4px;
+    margin: 16px 0;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.7;
+    font-weight: 500;
+  }
+  .takeaway .label { font-size: 11px; color: #8a7a4a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
+  .takeaway .en { display: block; color: #a09060; font-size: 13px; font-style: italic; font-weight: 400; margin-top: 4px; }
+
+  .footer {
+    background: #1a1a2e;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #2a2a4e;
+  }
+  .footer p { color: #6a5a4a; font-size: 12px; line-height: 1.6; }
+  .footer a { color: #8a7a5a; text-decoration: none; }
+  .footer a:hover { color: #c9a030; }
+
+  @media (max-width: 480px) {
+    body { background: #fdf6e3; }
+    .container { border-radius: 0; border: none; box-shadow: none; }
+    .content { padding: 10px 12px 14px; }
+    .cover { padding: 28px 18px 22px; }
+    .cover h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+
+<div class="cover">
+  <h1>📖 社牛圣经</h1>
+  <h2>The Social Bible</h2>
+  <div class="subtitle">冰火岛 · 每周社交话题指南</div>
+  <div class="date">2026-06-17 周三 · June 17, 2026</div>
+  <div class="chapter">历代志上 2:6 / 1 Chronicles 2:6</div>
+</div>
+<div class="content">
+
+<div class="topic"><div class="title"># 📖 冰火岛社牛圣经 · 本周版
+<div class="topic"><div class="title">## Binghuodao Social Bible · This Week
+<p>---</p>
+<div class="topic"><div class="title"><strong>✦ 本周最值得记住的一个社交洞察 ✦</strong>
+<p><strong>EN: ✦ The one social insight you need this week ✦</strong></p>
+<p>当全世界都在急着下结论时，学会提问的人才是赢家。尤其是在今年夏天，沉默比瞎聊更有力量。</p>
+<p>---</p>
+<div class="topic"><div class="title">## 🔥 本周必聊 / Hot This Week
+<div class="topic"><div class="title">### 1. 特朗普提议由叙利亚代替以色列打击真主党
+<p><strong>EN: Trump Proposes Syria Replace Israel in Striking Hezbollah</strong></p>
+<div class="bg">一句话背景：特朗普公开建议让叙利亚出手打真主党，连以色列都懵了。这波操作比穿越剧还离谱。
+<div class="bg">争议点：真主党是黎巴嫩武装，叙利亚是阿萨德政权，特朗普这个提议是认真的还是又一次“推特治国”？
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">社恐金句：
+<div class="topic"><div class="title">“我突然觉得我的工作汇报比特朗普的外交建议靠谱多了。”
+<div class="advance">🚀 进阶话题：
+<p>“这事暴露了美伊谈判的脆弱性——当一个大国开始随口分配任务，地缘棋局就变成了真人秀。”</p>
+<div class="topic"><div class="title">### 2. SpaceX 600亿美元收购AI初创公司
+<p><strong>EN: SpaceX Buys AI Startup for $60 Billion</strong></p>
+<div class="bg">一句话背景：马斯克的火箭公司要花600亿美元买下Cursor——一个“氛围编程”公司。这钱够再发射50次星舰了。
+<div class="bg">争议点：Cursor号称让非程序员也能写代码，但600亿美元？这估值是火箭燃料灌多了吗？
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">社恐金句：
+<div class="topic"><div class="title">“我写一行代码赚几毛钱，他们写一行代码赚600亿。这差距比地球到火星还远。”
+<div class="advance">🚀 进阶话题：
+<p>“这次收购说明世界模型的军备竞赛已经进入地狱模式——马斯克想用Grok和Cursor打通‘语言+代码+物理世界’的闭环。”</p>
+<p>---</p>
+<div class="topic"><div class="title">## 【🖥️ 科技 · Tech】
+<div class="topic"><div class="title">### 山姆中国CMO辞职：“食品安全问题”背后
+<p><strong>EN: Sam’s Club China CMO Resigns Amid Food Safety Scandal</strong></p>
+<div class="bg">一句话背景：监管刚点名山姆有食品安全问题，CMO张青就递了辞呈。这时间点比写好的剧本还准。
+<div class="bg">争议点：辞职是背锅还是主动切割？山姆中国这几年靠会员制赚翻，但品控似乎没跟上野心。
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">社恐金句：
+<div class="topic"><div class="title">“以前逛山姆是为了炫耀会员卡，现在逛山姆是为了检查保质期。”
+<div class="advance">🚀 进阶话题：
+<p>“会员制超市的信任危机比打价格战更致命——因为会员费本质是‘预付费的忠诚度’。”</p>
+<p>---</p>
+<div class="topic"><div class="title">## 【💰 财经 · Finance】
+<div class="topic"><div class="title">### 宝马下调2026年利润指引：伊朗战争+中国市场双重暴击
+<p><strong>EN: BMW Slashes 2026 Profit Guidance: Iran War + China Woes</strong></p>
+<div class="bg">一句话背景：宝马预计今年汽车业务利润率只有1%-3%，比竞争对手差了不止一个档次。
+<div class="bg">争议点：欧洲车企在中国市场节节败退，伊朗战争又切断了供应链。豪华车品牌还能硬多久？
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">社恐金句：
+<div class="topic"><div class="title">“我买不起宝马不是因为穷，是因为宝马自己都快买不起利润了。”
+<div class="advance">🚀 进阶话题：
+<div class="topic"><div class="title">“电车转型没赶上，地缘政治又挨刀——传统车企的‘舒适区’正在变成火葬场。”
+<p>---</p>
+<div class="topic"><div class="title">## 【🎬 娱乐·音乐·影视 · Entertainment】
+<p>### Sharleen Chidiac：朋克音乐剧《All the Rage》——当汗水变成音符</p>
+<p><strong>EN: Sharleen Chidiac’s Punk Musical ‘All the Rage’: Sweat Becomes Notes</strong></p>
+<div class="bg">一句话背景：一位编舞兼主唱用朋克精神探讨野心与自由，现场据说能让人肾上腺素飙升180%。
+<div class="bg">争议点：朋克音乐剧是小众狂欢还是下一种主流娱乐形式？
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">社恐金句：
+<div class="topic"><div class="title">“这比我的健身房团课还带劲——至少音乐剧里的汗水不用擦。”
+<div class="advance">🚀 进阶话题：
+<p>“当艺术形式突破‘第四堵墙’，观众就不再是旁观者，而是参与者。这也是社恐们最害怕的事。”</p>
+<p>---</p>
+<div class="topic"><div class="title">## 【🌍 政治·社会 · Politics &amp; Society】
+<div class="topic"><div class="title">### 塞拉利昂第一夫人：没有“可靠数据”就不谴责FGM
+<p><strong>EN: Sierra Leone’s First Lady Refuses to Condemn FGM Without ‘Reliable Data’</strong></p>
+<div class="bg">一句话背景：面对健康专家和幸存者的公开信，第一夫人以“缺乏数据”为由拒绝表态，引发巨大争议。
+<div class="bg">争议点：是科学精神还是政治回避？当传统文化遇上人权，数据到底该站哪边？
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">社恐金句：
+<div class="topic"><div class="title">“如果数据能解决一切，那我的社交评分早该是满分了。”
+<div class="advance">🚀 进阶话题：
+<div class="topic"><div class="title">“国际援助的‘数据崇拜’有时会变成道德避风港——不掌握数据就可以不做决定。”
+<p>---</p>
+<div class="topic"><div class="title">## 【🧘 生活·健康 · Lifestyle &amp; Wellness】
+<div class="topic"><div class="title">### 这些约会App想让你在健身房见面
+<p><strong>EN: These Dating Apps Want You to Meet at the Gym</strong></p>
+<div class="bg">一句话背景：新一批约会App主打健身交友，匹配后不是约咖啡，而是约举铁。
+<div class="bg">争议点：流汗约会会增进感情，还是让社恐人士的尴尬升级到缺氧？
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">社恐金句：
+<div class="topic"><div class="title">“我连健身房都不敢一个人去，现在还要在那里约会？不如直接鲨了我。”
+<div class="advance">🚀 进阶话题：
+<div class="topic"><div class="title">“当健身成为社交货币，那‘躺平’就是一种社交破产。”
+<p>---</p>
+<div class="topic"><div class="title">## 📅 季节限定 / Seasonal Picks
+<div class="topic"><div class="title">### 🔥 毕业季 / Graduation Season
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">社恐金句：
+<p>“论文答辩时你面对的是三个教授，毕业聚餐时你要面对的是三十个同学和他们的期望。两种‘答辩’都需要勇气。”</p>
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">第二种：
+<div class="topic"><div class="title">“毕业照越好看，未来越模糊——因为滤镜只能美化过去，不能定义明天。”
+<div class="topic"><div class="title">### ⚽ 欧洲杯 / Euro Cup
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">社恐金句：
+<p>“不懂战术没关系，只要在进球时大喊‘漂亮’、在丢球时摇头叹息，就能假装是资深球迷。”</p>
+<div class="quote-label">💬 社恐金句 / Conversation starter</div><div class="quote">第二种：
+<div class="topic"><div class="title">“冷门预测的正确率往往比专家高，因为足球的上帝喜欢打脸。”
+<p>---</p>
+<p>## 💡 经典话题新角度 / Classic Topic, Fresh Angle</p>
+<p>### 智商税吐槽：知识付费 / Consumer Regrets: Paid Content</p>
+<div class="topic"><div class="title"><strong>场景A：饭局/聚会</strong>
+<p>中文：“花999买了个《七天学会财富自由》，结果第一课教我怎么攒钱。要是我会攒钱还会花999买这个？”</p>
+<p>适用场景：当朋友炫耀自己报名了某个高价课程时，用自嘲化解尴尬，顺便点出智商税本质。</p>
+<div class="topic"><div class="title"><strong>场景B：一对一尬聊</strong>
+<p>中文：“我最近在听一个播客，花了两百块。最后得到的最大收获是：原来‘知识付费’的‘付费’才是重点，‘知识’是赠品。”</p>
+<div class="topic"><div class="title">适用场景：当对方聊起最近的学习投资时，用幽默揭露真相，比直接批评更让人接受。
+<div class="topic"><div class="title"><strong>场景C：群聊/朋友圈评论</strong>
+<p>中文：“自从买了那个‘AI副业课’，我的副业就变成了——在二手平台卖这个课的笔记。”</p>
+<div class="topic"><div class="title">适用场景：在群里看到有人推荐高价课程时，用亲身经历（或编的故事）轻松打脸。
+<p>---</p>
+<div class="topic"><div class="title">## 🌟 本周装逼话术精选 / Power Moves of the Week
+<p>1. <strong>中文：</strong> “当所有人都在讨论‘风口’时，你应该讨论‘风停了以后谁在裸泳’。”</p>
+<p><strong>EN:</strong> “While everyone talks about ‘the wind’, you should talk about ‘who’s swimming naked when it stops’.”</p>
+<div class="topic"><div class="title"><strong>适用场景：</strong> 创业者聚会、科技沙龙。
+<p><strong>EN scene:</strong> Startup meetups, tech salons.</p>
+<p>2. <strong>中文：</strong> “我不说‘随便’，我只说‘我选那个最没有人选的选项’——听起来很有主见，其实是怕做错决定。”</p>
+<p><strong>EN:</strong> “I never say ‘I don’t care’. I say ‘I pick the option nobody else picked’ — sounds decisive, but really just afraid of wrong decisions.”</p>
+<div class="topic"><div class="title"><strong>适用场景：</strong> 聚餐点菜、旅行行程决策。
+<p><strong>EN scene:</strong> Group dining, trip planning.</p>
+<p>3. <strong>中文：</strong> “我的生活哲学很简单：如果一件事不能让我快乐、也不让我赚钱、还让我变胖，那它就是一件‘社交’。”</p>
+<p><strong>EN:</strong> “My life philosophy: If something doesn’t make me happy, doesn’t make me money, and makes me fat, it’s called ‘socializing’.”</p>
+<div class="topic"><div class="title"><strong>适用场景：</strong> 被邀请去无效社交活动时的婉拒开场。
+<p><strong>EN scene:</strong> Declining a pointless social event.</p>
+<p>4. <strong>中文：</strong> “我最近在研究‘沉默的社交价值’——发现不说话时，周围的人反而觉得我深不可测。”</p>
+<p><strong>EN:</strong> “I’ve been studying the ‘social value of silence’ — turns out when I stay quiet, people think I’m mysterious.”</p>
+<div class="topic"><div class="title"><strong>适用场景：</strong> 独自一人时显得不尴尬。
+<p><strong>EN scene:</strong> When standing alone at a party.</p>
+<p>5. <strong>中文：</strong> “这个夏天最适合做的事情不是恋爱，而是——在空调房里用‘我在减肥’拒绝一切外出邀请。”</p>
+<p><strong>EN:</strong> “The best thing to do this summer isn’t falling in love — it’s staying in AC and using ‘I’m on a diet’ to decline every outdoor invite.”</p>
+<div class="topic"><div class="title"><strong>适用场景：</strong> 夏天被约出门。
+<p><strong>EN scene:</strong> Summer outing invitations.</p>
+<p>---</p>
+<div class="topic"><div class="title">## 📖 圣经结语 / Closing
+<p>本周的世界有点疯：特朗普在玩外交即兴剧，马斯克在玩火箭烧钱游戏，山姆在玩食品安全俄罗斯轮盘。但别忘了，你才是自己社交剧本的导演。不用每场戏都上场，有时候坐在台下嗑瓜子看戏，才是最高级的参与。</p>
+<div class="topic"><div class="title"><strong>下期再见，社恐也要社牛。</strong>
+<p><strong>EN: See you next week. Even an introvert can socialize like a boss.</strong></p>
+</div>
+
+<div class="footer">
+  <p>🦐 冰火岛每日社牛圣经 / Binghuodao Social Bible · 2026-06-17</p>
+  <p>每周六17:00推送 / Every Saturday 5PM · 社恐救星 · 开口神器</p>
+  <p>Bilingual · 中英双语</p>
+  <p><a href="#">订阅/Subscribe</a></p>
+</div>
+</div></body></html>
