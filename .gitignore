@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+preview.html
+preview.md
+*.png
+patch_prompt.py
+preview_gen.py
