@@ -106,9 +106,9 @@ If a news source fails, the script falls back to seasonal topics only (no fake n
 
 ## Automate with Cron
 
-Every Saturday 17:00 CST:
+Daily at 17:00 CST:
 ```
-0 17 * * 6 cd /path/to/social-bible && source .env && python3 social_bible_gen.py >> /tmp/social-bible.log 2>&1
+0 17 * * * cd /path/to/social-bible && bash run.sh
 ```
 
 ---

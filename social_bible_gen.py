@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-冰火岛社牛圣经 / Binghuodao Social Bible — 周六推送
+冰火岛社牛圣经 / Binghuodao Social Bible — 每日推送
 中英双语分离版（中文上半、英文下半）
 """
 import smtplib, os, sys, json, subprocess, re, hashlib, random, textwrap
@@ -37,9 +37,14 @@ BOOKS_EN = ["Genesis","Exodus","Leviticus","Numbers","Deuteronomy","Joshua","Jud
     "Matthew","Mark","Luke","John","Acts","Romans","1 Corinthians","2 Corinthians",
     "Galatians","Ephesians","Philippians","Colossians","Revelation"]
 
-def random_chapter():
-    i = random.randint(0, len(BOOKS_CN)-1)
-    return f"{BOOKS_CN[i]} {random.randint(1,30)}:{random.randint(1,40)}", f"{BOOKS_EN[i]} {random.randint(1,30)}:{random.randint(1,40)}"
+def daily_chapter():
+    """每天固定一个圣经章节目录（按年积日确定，保证每日不同但当天一致）"""
+    from datetime import date
+    day = date.today().timetuple().tm_yday
+    i = (day - 1) % len(BOOKS_CN)
+    c = (day * 7 + 13) % 30 + 1
+    v = (day * 3 + 7) % 40 + 1
+    return f"{BOOKS_CN[i]} {c}:{v}", f"{BOOKS_EN[i]} {c}:{v}"
 
 # ─── 采集 ───
 TOPIC_SOURCES = OrderedDict([
@@ -233,10 +238,21 @@ def build_prompt(cat_items, season_topics, ev):
     for s in season_topics:
         seas += f"- {s['title']} / {s.get('title_en','')} — {s.get('desc','')} {s.get('heat','')}\n"
 
-    cc, ce = random_chapter()
+    cc, ce = daily_chapter()
+    # 每日轮换种子：保证每天封面风格、金句、切入角度不同
+    day_seed = NOW.strftime("%j")  # 年积日 001-365
+    daily_vibe = int(day_seed) % 8
+    VIBES = ["锋利直接", "幽默自嘲", "冷眼旁观", "过来人口吻", "反讽吐槽", "故事开场", "数据说话", "从具体小事切入"]
+    vibe = VIBES[daily_vibe]
     prompt = f"""Two separate newsletters in one document. First half is pure Chinese, second half is pure English.
 
-Today: {DATE_EN}, Saturday. Tag: {cc} / {ce}
+🌱 DAILY VARIETY — This is a DAILY newsletter. Content MUST be different from yesterday.
+- Cover line style today: {vibe}（今天的封面语和结语用{vibe}的风格写）
+- Do NOT repeat the same cover line, one-liners, or scenarios from previous issues.
+- 必聊/热搜/科技财经 从今日RAW MATERIAL中选话题，每天数据不同自然不同
+- 美食/两性/经典话题 即使主题相同，角度A/B/C和金句也必须每天不同
+
+Today: {DATE_EN}. Tag: {cc} / {ce}
 
 RAW MATERIAL (all real RSS data — use this for "本周必聊" and "分类话题"):
 {raw}
@@ -551,7 +567,7 @@ FULL_HTML_TEMPLATE = """<!DOCTYPE html>
 {BODY}
 </div>
 <div class="footer">
-  冰火岛 · 每周六17:00 · 中英双语
+  冰火岛 · 每日双语社交圣经
 </div>
 </div></body></html>"""
 
@@ -593,7 +609,7 @@ def convert_md_to_html(md_text, chap_cn, chap_en):
     body_html = wrap_cards(body_html)
     html = FULL_HTML_TEMPLATE.format(
         CSS=CSS_STYLE,
-        DATE_CN=f"{DATE_STR} 周六",
+        DATE_CN=f"{DATE_STR}",
         DATE_EN=DATE_EN,
         CHAP_CN=chap_cn,
         CHAP_EN=chap_en,
@@ -625,7 +641,7 @@ def send(html, text_alt):
     print("✅ 完成")
 
 def fallback(seasons, ev):
-    cc, ce = random_chapter()
+    cc, ce = daily_chapter()
     md = "# 社牛圣经\n\n> 今天的小话题\n\n---\n\n## 本周必聊\n\n---\n\n## 分类话题\n\n---\n\n## 季节限定\n"
     for s in seasons:
         md += f"\n### {s['title']}\n{s.get('desc','')}\n\n"
@@ -658,11 +674,11 @@ def main():
         ak, bu = get_ds()
         prompt = build_prompt(data, seasons, ev)
         print("  AI generating...")
-        ai_text = call_ai(ak, bu, f"Today {DATE_STR} Saturday. Write in Markdown.", prompt)
+        ai_text = call_ai(ak, bu, f"Today {DATE_STR}. Write in Markdown.", prompt)
         if ai_text and len(ai_text) > 500:
             print(f"  AI output: {len(ai_text)} chars")
             raw_md = ai_text
-            cc, ce = random_chapter()
+            cc, ce = daily_chapter()
         else:
             print("  AI failed, using fallback")
             raw_md, cc, ce = fallback(seasons, ev)

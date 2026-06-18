@@ -32,7 +32,7 @@ def main():
     
     print("  AI生成中...")
     ai_text = call_ai(api_key, base_url, 
-        f"你是「冰火岛社牛圣经」的主编小虾。今天是{DATE_STR}周六。",
+        f"你是「冰火岛社牛圣经」的主编小虾。今天是{DATE_STR}。",
         prompt)
     
     if ai_text and len(ai_text) > 500:

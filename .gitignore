@@ -1,8 +1,6 @@
+.env*
 preview.html
 preview.md
-preview_gen.py
-patch_prompt.py
-run.sh
-*.png
 __pycache__/
 *.pyc
+*.png
